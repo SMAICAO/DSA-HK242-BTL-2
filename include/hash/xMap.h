@@ -214,18 +214,33 @@ xMap<K, V>::xMap(
     void (*deleteKeys)(xMap<K, V> *pMap))
 {
     // YOUR CODE IS HERE
+    this->hashCode = hashCode;
+    this->loadFactor = loadFactor;
+    this->valueEqual = valueEqual;
+    this->deleteValues = deleteValues;
+    this->keyEqual = keyEqual;
+    this->deleteKeys = deleteKeys;
+
+    // Initializing table with size 10
+    capacity = 10;
+    count = 0;
+    table = new DLinkedList<Entry *>[capacity];
 }
 
 template <class K, class V>
 xMap<K, V>::xMap(const xMap<K, V> &map)
 {
     // YOUR CODE IS HERE
+    copyMapFrom(map);
+    deleteKeys = map.deleteKeys;
+    deleteValues = map.deleteValues;
 }
 
 template <class K, class V>
 xMap<K, V> &xMap<K, V>::operator=(const xMap<K, V> &map)
 {
     // YOUR CODE IS HERE
+    this = new xMap(map);
     return *this;
 }
 
@@ -233,6 +248,15 @@ template <class K, class V>
 xMap<K, V>::~xMap()
 {
     // YOUR CODE IS HERE
+    removeInternalData();
+
+
+    // Setting function pointers to nullptr
+    hashCode = nullptr;
+    keyEqual = nullptr;
+    valueEqual = nullptr;
+    deleteKeys = nullptr;
+    deleteValues = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -245,6 +269,29 @@ V xMap<K, V>::put(K key, V value)
     int index = this->hashCode(key, capacity);
     V retValue = value;
     // YOUR CODE IS HERE
+    int index = hashCode(key, capacity);
+    List<Entry*> &list = table[index];
+
+    int indexOfKey = -1;
+
+    for (auto it = list.begin(), it != list.end(), it++) {
+        if (*it.key == key) {
+            indexOfKey = list.indexOf(key);
+            break;
+        }
+    }
+
+    // If key found
+    if (indexOfKey != -1) {
+        // Update the value
+        retValue = list.get(indexOfKey)->value;
+        list.get(indexOfKey)->value = value;
+    } else {
+        // Key not found, add new entry
+        Entry *newEntry = new Entry(key, value);
+        list.add(newEntry);
+        count++;
+    }
 
     return retValue;
 }
@@ -254,6 +301,21 @@ V &xMap<K, V>::get(K key)
 {
     int index = hashCode(key, capacity);
     // YOUR CODE IS HERE
+    List<Entry*> &list = table[index];
+    int indexOfKey = -1;
+
+    for (auto it = list.begin(), it != list.end(), it++) {
+        if (keyEQ(*it.key, key)) {
+            indexOfKey = list.indexOf(key);
+            break;
+        }
+    }
+
+
+    // key: found
+    if (indexOfKey != -1) {
+        return list.get(indexOfKey)->value;
+    }
 
     // key: not found
     stringstream os;
@@ -266,6 +328,31 @@ V xMap<K, V>::remove(K key, void (*deleteKeyInMap)(K))
 {
     int index = hashCode(key, capacity);
     // YOUR CODE IS HERE
+    List<Entry*> &list = table[index];
+    int indexOfKey = -1;
+
+    for (auto it = list.begin(), it != list.end(), it++) {
+        if (keyEQ(*it.key, key)) {
+            indexOfKey = list.indexOf(key);
+            break;
+        }
+    }
+
+    // key: found
+    if (indexOfKey != -1) {
+        // Saving the return value
+        V retValue = list.get(indexOfKey).value;
+
+        // Deleting the key
+        if (deleteKeyInMap != nullptr) {
+            deleteKeyInMap(list.get(indexOfKey)->key);
+        }
+
+        // Deleting the entry
+        list->removeItem(list.get(indexOfKey), deleteEntry);
+        count--;
+        return retValue;
+    }
 
     // key: not found
     stringstream os;
@@ -277,53 +364,141 @@ template <class K, class V>
 bool xMap<K, V>::remove(K key, V value, void (*deleteKeyInMap)(K), void (*deleteValueInMap)(V))
 {
     // YOUR CODE IS HERE
+    int index = hashCode(key, capacity);
+    
+    List<Entry*> &list = table[index];
+    int indexOfKey = -1;
+
+    for (auto it = list.begin(), it != list.end(), it++) {
+        if (keyEQ(*it.key, key) && valueEQ(*it.value, value)) {
+            indexOfKey = list.indexOf(key);
+            break;
+        }
+    }
+
+    // key: found
+    if (indexOfKey != -1) {
+        // Saving the return value
+        V retValue = list.get(indexOfKey).value;
+
+        // Deleting the key
+        if (deleteKeyInMap != nullptr) {
+            deleteKeyInMap(list.get(indexOfKey)->key);
+        }
+
+        // Deleting the entry
+        list->removeItem(list.get(indexOfKey), deleteEntry);
+        count--;
+        return retValue;
+    }
 }
 
 template <class K, class V>
 bool xMap<K, V>::containsKey(K key)
 {
     // YOUR CODE IS HERE
+    int index = hashCode(key, capacity);
+    List<Entry*> &list = table[index];
+    int indexOfKey = -1;
+
+    for (auto it = list.begin(), it != list.end(), it++) {
+        // Key found
+        if (keyEQ(*it.key, key)) {
+            return true;
+        }
+    }
+
+    // Key not found
+    return false;
 }
 
 template <class K, class V>
 bool xMap<K, V>::containsValue(V value)
 {
     // YOUR CODE IS HERE
+    for (int idx = 0; idx < capacity; idx++)
+    {
+        List<Entry*> &list = table[idx];
+        for (auto it = list.begin(), it != list.end(), it++) {
+            // Value found
+            if (valueEQ(*it.value, value)) {
+                return true;
+            }
+        }
+    }
+
+    // Value not found
+    return false;
 }
 template <class K, class V>
 bool xMap<K, V>::empty()
 {
     // YOUR CODE IS HERE
+    return count == 0;
 }
 
 template <class K, class V>
 int xMap<K, V>::size()
 {
     // YOUR CODE IS HERE
+    return count;
 }
 
 template <class K, class V>
 void xMap<K, V>::clear()
 {
     // YOUR CODE IS HERE
+    removeInternalData();
+    capacity = 10;
+    count = 0;
+    table = new DLinkedList<Entry *>[capacity];
 }
 
 template <class K, class V>
 DLinkedList<K> xMap<K, V>::keys()
 {
     // YOUR CODE IS HERE
+    DLinkedList<K> keysList;
+
+    for (int idx = 0; idx < capacity; idx++)
+    {
+        List<Entry*> &list = table[idx];
+        for (auto it = list.begin(), it != list.end(), it++) {
+            keysList.add(*it.key);
+        }
+    }
+    return keysList;
 }
 
 template <class K, class V>
 DLinkedList<V> xMap<K, V>::values()
 {
     // YOUR CODE IS HERE
+    DLinkedList<V> valuesList;
+
+    for (int idx = 0; idx < capacity; idx++)
+    {
+        List<Entry*> &list = table[idx];
+        for (auto it = list.begin(), it != list.end(), it++) {
+            valuesList.add(*it.value);
+        }
+    }
+    return valuesList;
 }
 
 template <class K, class V>
 DLinkedList<int> xMap<K, V>::clashes()
 {
     // YOUR CODE IS HERE
+    DLinkedList<int> clashList;
+
+    for (int idx = 0; idx < capacity; idx++)
+    {
+        List<Entry*> &list = table[idx];
+        int clashCount = list.size();
+        clashList.add(clashCount);
+    }
+    return clashList;
 }
 
 template <class K, class V>
