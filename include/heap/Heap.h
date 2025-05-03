@@ -52,6 +52,7 @@ public:
     void heapify(T array[], int size);
     void clear();
     bool empty();
+    void heapsort(XArrayList<T>& arrayList);
     string toString(string (*item2str)(T&)=0 );
     //Inherit from IHeap: END
     
@@ -100,8 +101,6 @@ private:
     
     void removeInternalData();
     void copyFrom(const Heap<T>& heap);
-
-    void heapsort(XArrayList<T>& arrayList);
     
 //////////////////////////////////////////////////////////////////////
 ////////////////////////  INNER CLASSES DEFNITION ////////////////////
@@ -335,6 +334,35 @@ bool Heap<T>::empty(){
 }
 
 template<class T>
+void Heap<T>::heapsort(XArrayList<T>& arrayList) {
+    clear(); 
+    for (int i = 0; i < arrayList.size(); i++) {
+        ensureCapacity(++count);
+        elements[i] = arrayList.get(i);
+    }
+
+    int position = count / 2 - 1;
+    while (position >= 0) {
+        reheapDown(position);
+        println();
+        position--;
+    }
+
+    int last = count - 1;
+    while (last > 0) {
+        swap(0, last);
+        last--;
+        reheapDown(0);
+        println();
+    }
+
+    arrayList.clear();
+    for (int i = 0; i < count; i++) {
+        arrayList.add(elements[i]);
+    }
+}
+
+template<class T>
 string Heap<T>::toString(string (*item2str)(T&)){
     stringstream os;
     if(item2str != 0){
@@ -446,27 +474,6 @@ void Heap<T>::copyFrom(const Heap<T>& heap){
     //Copy items from heap:
     for(int idx=0; idx < heap.size(); idx++){
         this->elements[idx] = heap.elements[idx];
-    }
-}
-
-template<class T>
-void Heap<T>::heapsort(XArrayList<T>& arrayList) {
-    clear();
-    for (int i = 0; i < arrayList.size(); i++) {
-        push(arrayList.get(i));
-        println();
-    }
-
-    if (arrayList.size() > 1) {
-        if (compare(elements[0], elements[1]) == -1) {
-            for (int i = 0; i < arrayList.size(); i++) {
-                arrayList.set(i, pop());
-            }
-        } else {
-            for (int i = arrayList.size() - 1; i >= 0; i--) {
-                arrayList.set(i, pop());
-            }
-        }
     }
 }
 

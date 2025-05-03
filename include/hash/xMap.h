@@ -271,14 +271,13 @@ V xMap<K, V>::put(K key, V value)
     int index = this->hashCode(key, capacity);
     V retValue = value;
     // YOUR CODE IS HERE
-    int index = hashCode(key, capacity);
     List<Entry*> &list = table[index];
 
     int indexOfKey = -1;
 
-    for (auto it = list.begin(), it != list.end(), it++) {
-        if (*it.key == key) {
-            indexOfKey = list.indexOf(key);
+    for (auto it = list.begin(); it != list.end(); it++) {
+        if ((*it)->key == key) {
+            indexOfKey = list.indexOf(*it);
             break;
         }
     }
@@ -306,9 +305,9 @@ V &xMap<K, V>::get(K key)
     List<Entry*> &list = table[index];
     int indexOfKey = -1;
 
-    for (auto it = list.begin(), it != list.end(), it++) {
-        if (keyEQ(*it.key, key)) {
-            indexOfKey = list.indexOf(key);
+    for (auto it = list.begin(); it != list.end(); it++) {
+        if (keyEQ((*it)->key, key)) {
+            indexOfKey = list.indexOf(*it);
             break;
         }
     }
@@ -333,8 +332,8 @@ V xMap<K, V>::remove(K key, void (*deleteKeyInMap)(K))
     List<Entry*> &list = table[index];
     int indexOfKey = -1;
 
-    for (auto it = list.begin(), it != list.end(), it++) {
-        if (keyEQ(*it->key, key)) {
+    for (auto it = list.begin(); it != list.end(); it++) {
+        if (keyEQ((*it)->key, key)) {
             indexOfKey = list.indexOf(*it);
             break;
         }
@@ -371,8 +370,8 @@ bool xMap<K, V>::remove(K key, V value, void (*deleteKeyInMap)(K), void (*delete
     List<Entry*> &list = table[index];
     int indexOfKey = -1;
 
-    for (auto it = list.begin(), it != list.end(), it++) {
-        if (keyEQ(*it->key, key) && valueEQ(*it->value, value)) {
+    for (auto it = list.begin(); it != list.end(); it++) {
+        if (keyEQ((*it)->key, key) && valueEQ((*it)->value, value)) {
             indexOfKey = list.indexOf(*it);
             break;
         }
@@ -408,9 +407,9 @@ bool xMap<K, V>::containsKey(K key)
     List<Entry*> &list = table[index];
     int indexOfKey = -1;
 
-    for (auto it = list.begin(), it != list.end(), it++) {
+    for (auto it = list.begin(); it != list.end(); it++) {
         // Key found
-        if (keyEQ(*it.key, key)) {
+        if (keyEQ((*it)->key, key)) {
             return true;
         }
     }
@@ -426,9 +425,9 @@ bool xMap<K, V>::containsValue(V value)
     for (int idx = 0; idx < capacity; idx++)
     {
         List<Entry*> &list = table[idx];
-        for (auto it = list.begin(), it != list.end(), it++) {
+        for (auto it = list.begin(); it != list.end(); it++) {
             // Value found
-            if (valueEQ(*it.value, value)) {
+            if (valueEQ((*it)->value, value)) {
                 return true;
             }
         }
@@ -470,8 +469,8 @@ DLinkedList<K> xMap<K, V>::keys()
     for (int idx = 0; idx < capacity; idx++)
     {
         List<Entry*> &list = table[idx];
-        for (auto it = list.begin(), it != list.end(), it++) {
-            keysList.add(*it.key);
+        for (auto it = list.begin(); it != list.end(); it++) {
+            keysList.add((*it)->key);
         }
     }
     return keysList;
@@ -486,8 +485,8 @@ DLinkedList<V> xMap<K, V>::values()
     for (int idx = 0; idx < capacity; idx++)
     {
         List<Entry*> &list = table[idx];
-        for (auto it = list.begin(), it != list.end(), it++) {
-            valuesList.add(*it.value);
+        for (auto it = list.begin(); it != list.end(); it++) {
+            valuesList.add((*it)->value);
         }
     }
     return valuesList;

@@ -65,12 +65,27 @@ template <int treeOrder>
 HuffmanTree<treeOrder>::~HuffmanTree()
 {
     //TODO
+    root->children.clear();
+    delete root;
 }
 
 template <int treeOrder>
 void HuffmanTree<treeOrder>::build(XArrayList<pair<char, int>>& symbolsFreqs)
 {
     //TODO
+    //(a) Create a heap from the given list.
+    Heap<HuffmanNode*> heap;
+    for (auto it = symbolsFreqs.begin(); it != symbolsFreqs.end(); ++it) {
+        HuffmanNode* node = new HuffmanNode(it->first, it->second);
+        heap.push(node);
+    }
+
+    //(b) While the heap has more than one node, select up to treeOrder nodes with the
+    //lowest frequencies.
+    //(c) Compute the total frequency and group selected nodes into a list.
+    //(d) Create a new internal node with the computed frequency and list of children.
+    //(e) Push the new internal node into the heap.
+    //(f) After the loop, the last remaining node becomes the root of the tree.
 }
 
 template <int treeOrder>
