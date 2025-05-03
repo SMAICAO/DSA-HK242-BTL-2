@@ -232,15 +232,17 @@ xMap<K, V>::xMap(const xMap<K, V> &map)
 {
     // YOUR CODE IS HERE
     copyMapFrom(map);
-    deleteKeys = map.deleteKeys;
-    deleteValues = map.deleteValues;
 }
 
 template <class K, class V>
 xMap<K, V> &xMap<K, V>::operator=(const xMap<K, V> &map)
 {
     // YOUR CODE IS HERE
-    this = new xMap(map);
+    if (this != &map) {
+        removeInternalData(); // Remove current data
+        copyMapFrom(map); // Copy new data
+    }
+
     return *this;
 }
 
@@ -290,7 +292,7 @@ V xMap<K, V>::put(K key, V value)
         // Key not found, add new entry
         Entry *newEntry = new Entry(key, value);
         list.add(newEntry);
-        count++;
+        ensureLoadFactor(++count);
     }
 
     return retValue;
@@ -332,8 +334,8 @@ V xMap<K, V>::remove(K key, void (*deleteKeyInMap)(K))
     int indexOfKey = -1;
 
     for (auto it = list.begin(), it != list.end(), it++) {
-        if (keyEQ(*it.key, key)) {
-            indexOfKey = list.indexOf(key);
+        if (keyEQ(*it->key, key)) {
+            indexOfKey = list.indexOf(*it);
             break;
         }
     }
@@ -341,7 +343,7 @@ V xMap<K, V>::remove(K key, void (*deleteKeyInMap)(K))
     // key: found
     if (indexOfKey != -1) {
         // Saving the return value
-        V retValue = list.get(indexOfKey).value;
+        V retValue = list.get(indexOfKey)->value;
 
         // Deleting the key
         if (deleteKeyInMap != nullptr) {
@@ -349,7 +351,7 @@ V xMap<K, V>::remove(K key, void (*deleteKeyInMap)(K))
         }
 
         // Deleting the entry
-        list->removeItem(list.get(indexOfKey), deleteEntry);
+        list.removeItem(list.get(indexOfKey), deleteEntry);
         count--;
         return retValue;
     }
@@ -370,27 +372,32 @@ bool xMap<K, V>::remove(K key, V value, void (*deleteKeyInMap)(K), void (*delete
     int indexOfKey = -1;
 
     for (auto it = list.begin(), it != list.end(), it++) {
-        if (keyEQ(*it.key, key) && valueEQ(*it.value, value)) {
-            indexOfKey = list.indexOf(key);
+        if (keyEQ(*it->key, key) && valueEQ(*it->value, value)) {
+            indexOfKey = list.indexOf(*it);
             break;
         }
     }
 
     // key: found
     if (indexOfKey != -1) {
-        // Saving the return value
-        V retValue = list.get(indexOfKey).value;
-
         // Deleting the key
         if (deleteKeyInMap != nullptr) {
             deleteKeyInMap(list.get(indexOfKey)->key);
         }
 
+        // Deleting the value
+        if (deleteValueInMap != nullptr) {
+            deleteValueInMap(list.get(indexOfKey)->value);
+        }
+
         // Deleting the entry
-        list->removeItem(list.get(indexOfKey), deleteEntry);
+        list.removeItem(list.get(indexOfKey), deleteEntry);
         count--;
-        return retValue;
+        return true;
     }
+
+    // key: not found
+    return false;
 }
 
 template <class K, class V>

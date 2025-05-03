@@ -4,6 +4,9 @@
 #include "heap/IHeap.h"
 #include <sstream>
 #include <iostream>
+
+#include "list/XArrayList.h"
+
 using namespace std;
 /*
  * function pointer: int (*comparator)(T& lhs, T& rhs)
@@ -85,7 +88,7 @@ private:
         else{
             if (a < b) return -1;
             else if(a > b) return 1;
-            else retu21rn 0;
+            else return 0;
         }
     }
     
@@ -169,8 +172,11 @@ Heap<T>::Heap(const Heap<T>& heap){
 
 template<class T>
 Heap<T>& Heap<T>::operator=(const Heap<T>& heap){
-    removeInternalData();
-    copyFrom(heap);
+    if (this != &heap){
+        removeInternalData();
+        copyFrom(heap);
+    }
+
     return *this;
 }
 
@@ -178,6 +184,9 @@ Heap<T>& Heap<T>::operator=(const Heap<T>& heap){
 template<class T>
 Heap<T>::~Heap(){
     removeInternalData();
+
+    comparator = nullptr;
+    deleteUserData = nullptr;
 }
 
 template<class T>
@@ -244,7 +253,12 @@ void Heap<T>::remove(T item, void (*removeItemData)(T)){
     //CASE 2: found at foundIdx
     elements[foundIdx] = elements[count - 1]; 
     count -= 1;
-    reheapDown(foundIdx);
+    int parent = (foundIdx - 1) / 2;
+    if (aLTb(elements[foundIdx], elements[parent])) {
+        reheapUp(foundIdx);
+    } else {
+        reheapDown(foundIdx);
+    }
     if(removeItemData != NULL) removeItemData(item); //free item's memory
 }
 
@@ -375,6 +389,7 @@ template<class T>
 void Heap<T>::reheapUp(int position){
     if(position <= 0) return;
     int parent = (position-1)/2;
+    
     if(aLTb(this->elements[position], this->elements[parent])){
         this->swap(position, parent);
         reheapUp(parent);
@@ -431,6 +446,27 @@ void Heap<T>::copyFrom(const Heap<T>& heap){
     //Copy items from heap:
     for(int idx=0; idx < heap.size(); idx++){
         this->elements[idx] = heap.elements[idx];
+    }
+}
+
+template<class T>
+void Heap<T>::heapsort(XArrayList<T>& arrayList) {
+    clear();
+    for (int i = 0; i < arrayList.size(); i++) {
+        push(arrayList.get(i));
+        println();
+    }
+
+    if (arrayList.size() > 1) {
+        if (compare(elements[0], elements[1]) == -1) {
+            for (int i = 0; i < arrayList.size(); i++) {
+                arrayList.set(i, pop());
+            }
+        } else {
+            for (int i = arrayList.size() - 1; i >= 0; i--) {
+                arrayList.set(i, pop());
+            }
+        }
     }
 }
 
