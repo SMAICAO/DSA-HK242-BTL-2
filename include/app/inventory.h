@@ -229,7 +229,11 @@ List1D<T> &List1D<T>::operator=(const List1D<T> &list)
 {
     // TODO
     if (this != &list) {
-        *pList = *list.pList;
+        pList->clear();
+
+        for (int i = 0; i < list.size(); i++) {
+            pList->add(list.get(i));
+        }
     }
 
     return *this;
@@ -503,8 +507,8 @@ void InventoryManager::removeProduct(int index)
     }
 
     attributesMatrix = newAttributesMatrix;
-    productNames = List1D<string>(newProductNames);
-    quantities = List1D<int>(newQuantities);
+    productNames = newProductNames;
+    quantities = newQuantities;
 }
 
 List1D<string> InventoryManager::query(string attributeName, const double &minValue,
