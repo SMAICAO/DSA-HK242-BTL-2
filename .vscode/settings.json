@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "variant": "cpp",
-        "type_traits": "cpp"
+        "type_traits": "cpp",
+        "utility": "cpp",
+        "stdexcept": "cpp"
     }
 }
