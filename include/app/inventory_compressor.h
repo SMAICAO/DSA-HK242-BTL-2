@@ -12,6 +12,11 @@
 #include "heap/Heap.h"
 #include "list/XArrayList.h"
 
+ostream& operator<<(ostream& os, pair<char, int>& p) {
+    os << "(" << p.first << ", " << p.second << ")";
+    return os;
+}
+
 template<int treeOrder>
 class HuffmanTree {
 public:
@@ -31,6 +36,7 @@ public:
     void generateCodes(xMap<char, std::string>& table);
     std::string decode(const std::string& huffmanCode);
 
+    void generateCodesRecursive(HuffmanNode* node, std::string code, xMap<char, std::string>& table, const char base16[]);
 private:
     HuffmanNode* root;
 };
@@ -74,7 +80,7 @@ void HuffmanTree<treeOrder>::build(XArrayList<pair<char, int>>& symbolsFreqs)
 {
     //TODO
     //(a) Create a heap from the given list.
-    Heap<HuffmanNode*> heap([](HuffmanNode* a, HuffmanNode* b) -> int {
+    Heap<HuffmanNode*> heap([](HuffmanNode*& a, HuffmanNode*& b)->int {
         if (a->freq < b->freq) return -1;
         else if (a->freq > b->freq) return 1;
         else if (a->symbol < b->symbol) return -1;
@@ -83,7 +89,7 @@ void HuffmanTree<treeOrder>::build(XArrayList<pair<char, int>>& symbolsFreqs)
     }, 0);
 
     for (auto it = symbolsFreqs.begin(); it != symbolsFreqs.end(); ++it) {
-        HuffmanNode* node = new HuffmanNode((*it)->first, (*it)->second);
+        HuffmanNode* node = new HuffmanNode((*it).first, (*it).second);
         heap.push(node);
     }
 
@@ -118,32 +124,26 @@ void HuffmanTree<treeOrder>::build(XArrayList<pair<char, int>>& symbolsFreqs)
 }
 
 template <int treeOrder>
-void HuffmanTree<treeOrder>::generateCodes(xMap<char, std::string> &table)
-{
-    //TODO
+void HuffmanTree<treeOrder>::generateCodes(xMap<char, std::string> &table) {
+    // TODO
     // Base 16 for encoding
     char base16[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+    generateCodesRecursive(root, "", table, base16);
+}
+
+// Helper recursive function
+template <int treeOrder>
+void HuffmanTree<treeOrder>::generateCodesRecursive(HuffmanNode* node, std::string code, 
+                                                   xMap<char, std::string> &table, const char base16[]) {
+    // If leaf node, store the code
+    if (node->children.empty()) {
+        table.put(node->symbol, code);
+        return;
+    }
     
-    // DFS to generate the codes
-    std::string code = "";
-    XArrayList<pair<HuffmanNode*, std::string>> stack;
-    stack.push(make_pair(root, code));
-
-    while (!stack.empty()) {
-        auto nodePair = stack.pop();
-        HuffmanNode* node = nodePair.first;
-        std::string code = nodePair.second;
-
-        // If node is leaf
-        if (node->children.empty()) {
-            table.put(node->symbol, code);
-        
-        // If node is parent
-        } else {
-            for (int i = 0; i < node->children.size(); ++i) {
-                stack.push(make_pair(node->children.get(i), code + base16[i]));
-            }
-        }
+    // If internal node, recursively process all children
+    for (int i = 0; i < node->children.size(); i++) {
+        generateCodesRecursive(node->children.get(i), code + base16[i], table, base16);
     }
 }
 
@@ -152,7 +152,11 @@ std::string HuffmanTree<treeOrder>::decode(const std::string &huffmanCode)
 {
     //TODO
     // Get codes
-    xMap<char, std::string> &table;
+    xMap<char, std::string> table([](char& symbol, int capacity)->int {
+        return 0;
+    }, 0.75, 0, 0, [](char& a, char& b)->bool {
+        return a == b;
+    });
     generateCodes(table);
 
     // Find the symbol corresponding to the given huffman code
@@ -181,7 +185,7 @@ InventoryCompressor<treeOrder>::InventoryCompressor(InventoryManager *manager)
 {
     //TODO
     invManager = manager;
-    huffmanTable = new xMap<char, std::string>([](char symbol, int capacity)->int {
+    huffmanTable = new xMap<char, std::string>([](char& symbol, int capacity)->int {
         return 0;
     });
     tree = new HuffmanTree<treeOrder>();
@@ -202,7 +206,7 @@ void InventoryCompressor<treeOrder>::buildHuffman()
     //TODO
     // (a) Traverse all products to build a frequency table for each character in the string
     // representation of a product using productToString.
-    XArrayList<pair<char, int>> symbolsFreqs(0, [](pair<char, int> a, pair<char, int> b)->bool {
+    XArrayList<pair<char, int>> symbolsFreqs(0, [](pair<char, int>& a, pair<char, int>& b)->bool {
         return a.first == b.first;
     }, 256);
 
@@ -251,9 +255,9 @@ std::string InventoryCompressor<treeOrder>::productToString(const List1D<Invento
         }
         
         ss << "("
-            << attribute.get(i).name
+            << attributes.get(i).name
             << ": "
-            << attribute.get(i).value
+            << attributes.get(i).value
             << ")";
     }
 
