@@ -53,6 +53,7 @@ public:
     void clear();
     bool empty();
     void heapsort(XArrayList<T>& arrayList);
+    void heapsortNoPrint(XArrayList<T>& arrayList);
     string toString(string (*item2str)(T&)=0 );
     //Inherit from IHeap: END
     
@@ -97,6 +98,7 @@ private:
     void swap(int a, int b);
     void reheapUp(int position);
     void reheapDown(int position);
+    void reheapDown(int position, int lastPosition);
     int getItem(T item);
     
     void removeInternalData();
@@ -316,7 +318,15 @@ int Heap<T>::size(){
 
 template<class T>
 void Heap<T>::heapify(T array[], int size){
-    for(int idx=0; idx < size; idx++) push(array[idx]);
+    for (int i = 0; i < size; i++) {
+        ensureCapacity(++count);
+        elements[i] = array[i];
+    }
+    int position = count / 2 - 1;
+    while (position >= 0) {
+        reheapDown(position);
+        position--;
+    }
 }
 
 template<class T>
@@ -343,21 +353,46 @@ void Heap<T>::heapsort(XArrayList<T>& arrayList) {
 
     int position = count / 2 - 1;
     while (position >= 0) {
-        reheapDown(position);
-        println();
+        reheapDown(position, count - 1);
         position--;
     }
 
     int last = count - 1;
     while (last > 0) {
         swap(0, last);
+        reheapDown(0, last - 1);
+        arrayList.clear();
+        for (int i = count - 1; i >= 0; --i) {
+            arrayList.add(elements[i]);
+        }
+        arrayList.println();
         last--;
-        reheapDown(0);
-        println();
+    }
+}
+
+template<class T>
+void Heap<T>::heapsortNoPrint(XArrayList<T>& arrayList) {
+    clear(); 
+    for (int i = 0; i < arrayList.size(); i++) {
+        ensureCapacity(++count);
+        elements[i] = arrayList.get(i);
+    }
+
+    int position = count / 2 - 1;
+    while (position >= 0) {
+        reheapDown(position, count - 1);
+        position--;
+    }
+
+    int last = count - 1;
+    while (last > 0) {
+        swap(0, last);
+        reheapDown(0, last - 1);
+        last--;
     }
 
     arrayList.clear();
-    for (int i = 0; i < count; i++) {
+    for (int i = count - 1; i >= 0; --i) {
         arrayList.add(elements[i]);
     }
 }
@@ -441,6 +476,27 @@ void Heap<T>::reheapDown(int position){
         if(aLTb(this->elements[smallChild], this->elements[position])){
             this->swap(smallChild, position);
             reheapDown(smallChild);
+        }
+    }
+}
+
+template<class T>
+void Heap<T>::reheapDown(int position, int lastPosition){
+    int leftChild = position*2 + 1;
+    int rightChild = position*2 + 2;
+
+    if(leftChild <= lastPosition){
+        int swapChild = leftChild;
+        
+        if ((rightChild <= lastPosition) && (aLTb(elements[rightChild], elements[leftChild]))) {
+            swapChild = rightChild;
+        } else {
+            swapChild = leftChild;
+        }
+
+        if (aLTb(elements[swapChild], elements[position])) {
+            swap(swapChild, position);
+            reheapDown(swapChild, lastPosition);
         }
     }
 }

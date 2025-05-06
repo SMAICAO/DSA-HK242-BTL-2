@@ -37,6 +37,13 @@ public:
     std::string decode(const std::string& huffmanCode);
 
     void generateCodesRecursive(HuffmanNode* node, std::string code, xMap<char, std::string>& table, const char base16[]);
+    void deleteNode(HuffmanNode* node) {
+        if (node == nullptr) return;
+        for (int i = 0; i < node->children.size(); ++i) {
+            deleteNode(node->children.get(i));
+        }
+        delete node;
+    }
 private:
     HuffmanNode* root;
 };
@@ -71,8 +78,7 @@ template <int treeOrder>
 HuffmanTree<treeOrder>::~HuffmanTree()
 {
     //TODO
-    root->children.clear();
-    delete root;
+    deleteNode(root);
 }
 
 template <int treeOrder>
@@ -83,31 +89,55 @@ void HuffmanTree<treeOrder>::build(XArrayList<pair<char, int>>& symbolsFreqs)
     Heap<HuffmanNode*> heap([](HuffmanNode*& a, HuffmanNode*& b)->int {
         if (a->freq < b->freq) return -1;
         else if (a->freq > b->freq) return 1;
-        else if (a->symbol < b->symbol) return -1;
-        else if (a->symbol > b->symbol) return 1;
-        else return 0;
-    }, 0);
+        else {
+            bool aIsLeaf = a->children.empty();
+            bool bIsLeaf = b->children.empty();
 
-    for (auto it = symbolsFreqs.begin(); it != symbolsFreqs.end(); ++it) {
-        HuffmanNode* node = new HuffmanNode((*it).first, (*it).second);
-        heap.push(node);
+            if (aIsLeaf && !bIsLeaf) return -1;
+            if (!aIsLeaf && bIsLeaf) return 1;
+            
+            bool aIsDummy = (a->symbol == '\0');
+            bool bIsDummy = (b->symbol == '\0');
+
+            if (aIsDummy && !bIsDummy) return 1;
+            if (!aIsDummy && bIsDummy) return -1;
+
+            if (a->symbol < b->symbol) return -1;
+            else if (a->symbol > b->symbol) return 1;
+            else return 0;
+        }
+    });
+
+    int heapSize = symbolsFreqs.size(), dummyNodes = 0;
+    if ((heapSize - 1) % (treeOrder - 1) != 0) {
+        dummyNodes = (treeOrder - 1) - ((heapSize - 1) % (treeOrder - 1));
     }
-
-    if ((symbolsFreqs.size() - 1) % (treeOrder - 1) != 0) {
-        for (int i = 0; i < (treeOrder - 1) - ((symbolsFreqs.size() - 1) % (treeOrder - 1)); ++i) {
-            HuffmanNode* node = new HuffmanNode('\0', 0);
-            heap.push(node);
+    const int ARRAY_SIZE = heapSize + dummyNodes;
+    HuffmanNode* array[ARRAY_SIZE];
+    for (int i = 0; i < ARRAY_SIZE; i++) {
+        if (i < heapSize) {
+            pair<char, int> pPair = symbolsFreqs.get(i);
+            array[i] = new HuffmanNode(pPair.first, pPair.second);
+        } else {
+            array[i] = new HuffmanNode('\0', 0);
         }
     }
+    heap.heapify(array, ARRAY_SIZE);
+
+    XArrayList<HuffmanNode*> sortedFreqs;
+    while (!heap.empty()) {
+        sortedFreqs.add(heap.pop());
+    }
+    heap.heapsortNoPrint(sortedFreqs);
 
     //(b) While the heap has more than one node, select up to treeOrder nodes with the
     //lowest frequencies.
-    while (heap.size() > 1) {
+    while (sortedFreqs.size() > 1) {
         //(c) Compute the total frequency and group selected nodes into a list.
         XArrayList<HuffmanNode*> children;
         int totalFreq = 0;
-        for (int i = 0; i < treeOrder && heap.size() > 0; ++i) {
-            HuffmanNode* child = heap.pop();
+        for (int i = 0; i < treeOrder && sortedFreqs.size() >= 0; ++i) {
+            HuffmanNode* child = sortedFreqs.removeAt(0);
             children.add(child);
             totalFreq += child->freq;
         }
@@ -116,11 +146,12 @@ void HuffmanTree<treeOrder>::build(XArrayList<pair<char, int>>& symbolsFreqs)
         HuffmanNode* parent = new HuffmanNode(totalFreq, children);
 
         //(e) Push the new internal node into the heap.
-        heap.push(parent);
+        sortedFreqs.add(0, parent);
+        heap.heapsortNoPrint(sortedFreqs);
     }
 
     //(f) After the loop, the last remaining node becomes the root of the tree
-    root = heap.pop();
+    root = sortedFreqs.get(0);
 }
 
 template <int treeOrder>
@@ -153,9 +184,7 @@ std::string HuffmanTree<treeOrder>::decode(const std::string &huffmanCode)
     //TODO
     // Get codes
     xMap<char, std::string> table([](char& symbol, int capacity)->int {
-        return 0;
-    }, 0.75, 0, 0, [](char& a, char& b)->bool {
-        return a == b;
+        return (int)symbol % capacity;
     });
     generateCodes(table);
 
@@ -163,18 +192,23 @@ std::string HuffmanTree<treeOrder>::decode(const std::string &huffmanCode)
     DLinkedList<char> symbols = table.keys();
     DLinkedList<std::string> codes = table.values();
 
-    string decodedStr = "";
-    for (int i = 0; i < huffmanCode.length(); ++i) {
-        std::string code = huffmanCode.substr(i, 1);
-        for (int j = i; j < huffmanCode.length(); ++j) {
-            if (codes.contains(code)) {
-                int index = codes.indexOf(code);
-                decodedStr += symbols.get(index);
-                i += code.length() - 1;
+    std::string decodedStr = "";
+    int i = 0;
+    while (i < huffmanCode.length()) {
+        bool matched = false;
+        // Try all codes to find a match at position i
+        for (int j = 0; j < codes.size(); ++j) {
+            const std::string& code = codes.get(j);
+            if (huffmanCode.substr(i, code.length()) == code) {
+                decodedStr += symbols.get(j);
+                i += code.length();
+                matched = true;
                 break;
-            } else {
-                code += huffmanCode[j];
             }
+        }
+        if (!matched) {
+            // No matching code found, break or handle error
+            break;
         }
     }
     return decodedStr;
@@ -186,7 +220,7 @@ InventoryCompressor<treeOrder>::InventoryCompressor(InventoryManager *manager)
     //TODO
     invManager = manager;
     huffmanTable = new xMap<char, std::string>([](char& symbol, int capacity)->int {
-        return 0;
+        return (int)symbol % capacity;
     });
     tree = new HuffmanTree<treeOrder>();
 }
@@ -196,7 +230,6 @@ InventoryCompressor<treeOrder>::~InventoryCompressor()
 {
     //TODO
     delete huffmanTable;
-    delete invManager;
     delete tree;
 }
 
@@ -208,7 +241,7 @@ void InventoryCompressor<treeOrder>::buildHuffman()
     // representation of a product using productToString.
     XArrayList<pair<char, int>> symbolsFreqs(0, [](pair<char, int>& a, pair<char, int>& b)->bool {
         return a.first == b.first;
-    }, 256);
+    });
 
     // Get product strings
     std::string productStr = "";
@@ -257,7 +290,7 @@ std::string InventoryCompressor<treeOrder>::productToString(const List1D<Invento
         ss << "("
             << attributes.get(i).name
             << ": "
-            << attributes.get(i).value
+            << std::fixed << std::setprecision(6) << attributes.get(i).value
             << ")";
     }
 
