@@ -308,7 +308,7 @@ using List = DLinkedList<T>;
 //////////////////////////////////////////////////////////////////////
 
 template <class T>
-DLinkedList<T>::DLinkedList(
+inline DLinkedList<T>::DLinkedList(
     void (*deleteUserData)(DLinkedList<T> *),
     bool (*itemEqual)(T &, T &))
 {
@@ -324,14 +324,14 @@ DLinkedList<T>::DLinkedList(
 }
 
 template <class T>
-DLinkedList<T>::DLinkedList(const DLinkedList<T> &list)
+inline DLinkedList<T>::DLinkedList(const DLinkedList<T> &list)
 {
     // TODO
     copyFrom(list);
 }
 
 template <class T>
-DLinkedList<T> &DLinkedList<T>::operator=(const DLinkedList<T> &list)
+inline DLinkedList<T> &DLinkedList<T>::operator=(const DLinkedList<T> &list)
 {
     // TODO
     if (this != &list)
@@ -343,7 +343,7 @@ DLinkedList<T> &DLinkedList<T>::operator=(const DLinkedList<T> &list)
 }
 
 template <class T>
-DLinkedList<T>::~DLinkedList()
+inline DLinkedList<T>::~DLinkedList()
 {
     // TODO
     removeInternalData();
@@ -352,7 +352,7 @@ DLinkedList<T>::~DLinkedList()
 }
 
 template <class T>
-void DLinkedList<T>::add(T e)
+inline void DLinkedList<T>::add(T e)
 {
     // TODO
     if (count == 0) {
@@ -372,7 +372,7 @@ void DLinkedList<T>::add(T e)
     count++;
 }
 template <class T>
-void DLinkedList<T>::add(int index, T e)
+inline void DLinkedList<T>::add(int index, T e)
 {
     // TODO
     if (index < 0 || index > count) {
@@ -399,7 +399,7 @@ void DLinkedList<T>::add(int index, T e)
 }
 
 template <class T>
-typename DLinkedList<T>::Node *DLinkedList<T>::getPreviousNodeOf(int index)
+inline typename DLinkedList<T>::Node *DLinkedList<T>::getPreviousNodeOf(int index)
 {
     /**
      * Returns the node preceding the specified index in the doubly linked list.
@@ -415,7 +415,7 @@ typename DLinkedList<T>::Node *DLinkedList<T>::getPreviousNodeOf(int index)
 }
 
 template <class T>
-T DLinkedList<T>::removeAt(int index)
+inline T DLinkedList<T>::removeAt(int index)
 {
     // TODO
     if (index < 0 || index >= count) {
@@ -446,21 +446,21 @@ T DLinkedList<T>::removeAt(int index)
 }
 
 template <class T>
-bool DLinkedList<T>::empty()
+inline bool DLinkedList<T>::empty()
 {
     // TODO
     return count == 0;
 }
 
 template <class T>
-int DLinkedList<T>::size()
+inline int DLinkedList<T>::size()
 {
     // TODO
     return count;
 }
 
 template <class T>
-void DLinkedList<T>::clear()
+inline void DLinkedList<T>::clear()
 {
     // TODO
     removeInternalData();
@@ -470,7 +470,7 @@ void DLinkedList<T>::clear()
 }
 
 template <class T>
-T &DLinkedList<T>::get(int index)
+inline T &DLinkedList<T>::get(int index)
 {
     // TODO
     if (index < 0 || index >= count) {
@@ -485,7 +485,7 @@ T &DLinkedList<T>::get(int index)
 }
 
 template <class T>
-int DLinkedList<T>::indexOf(T item)
+inline int DLinkedList<T>::indexOf(T item)
 {
     // TODO
     int index = 0;
@@ -500,7 +500,7 @@ int DLinkedList<T>::indexOf(T item)
 }
 
 template <class T>
-bool DLinkedList<T>::removeItem(T item, void (*removeItemData)(T))
+inline bool DLinkedList<T>::removeItem(T item, void (*removeItemData)(T))
 {
     // TODO
     int index = indexOf(item);
@@ -517,14 +517,14 @@ bool DLinkedList<T>::removeItem(T item, void (*removeItemData)(T))
 }
 
 template <class T>
-bool DLinkedList<T>::contains(T item)
+inline bool DLinkedList<T>::contains(T item)
 {
     // TODO
     return indexOf(item) != -1;
 }
 
 template <class T>
-string DLinkedList<T>::toString(string (*item2str)(T &))
+inline string DLinkedList<T>::toString(string (*item2str)(T &))
 {
     /**
      * Converts the list into a string representation, where each element is formatted using a user-provided function.
@@ -555,7 +555,7 @@ string DLinkedList<T>::toString(string (*item2str)(T &))
 }
 
 template <class T>
-void DLinkedList<T>::copyFrom(const DLinkedList<T> &list)
+inline void DLinkedList<T>::copyFrom(const DLinkedList<T> &list)
 {
     /**
      * Copies the contents of another doubly linked list into this list.
@@ -576,7 +576,7 @@ void DLinkedList<T>::copyFrom(const DLinkedList<T> &list)
 }
 
 template <class T>
-void DLinkedList<T>::removeInternalData()
+inline void DLinkedList<T>::removeInternalData()
 {
     /**
      * Clears the internal data of the list by deleting all nodes and user-defined data.

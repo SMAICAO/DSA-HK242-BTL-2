@@ -12,11 +12,6 @@
 #include "heap/Heap.h"
 #include "list/XArrayList.h"
 
-ostream& operator<<(ostream& os, pair<char, int>& p) {
-    os << "(" << p.first << ", " << p.second << ")";
-    return os;
-}
-
 template<int treeOrder>
 class HuffmanTree {
 public:
@@ -70,19 +65,19 @@ private:
 #endif // INVENTORY_COMPRESSOR_H
 
 template <int treeOrder>
-HuffmanTree<treeOrder>::HuffmanTree()
+inline HuffmanTree<treeOrder>::HuffmanTree()
 {
 }
 
 template <int treeOrder>
-HuffmanTree<treeOrder>::~HuffmanTree()
+inline HuffmanTree<treeOrder>::~HuffmanTree()
 {
     //TODO
     deleteNode(root);
 }
 
 template <int treeOrder>
-void HuffmanTree<treeOrder>::build(XArrayList<pair<char, int>>& symbolsFreqs)
+inline void HuffmanTree<treeOrder>::build(XArrayList<pair<char, int>>& symbolsFreqs)
 {
     //TODO
     //(a) Create a heap from the given list.
@@ -155,7 +150,7 @@ void HuffmanTree<treeOrder>::build(XArrayList<pair<char, int>>& symbolsFreqs)
 }
 
 template <int treeOrder>
-void HuffmanTree<treeOrder>::generateCodes(xMap<char, std::string> &table) {
+inline void HuffmanTree<treeOrder>::generateCodes(xMap<char, std::string> &table) {
     // TODO
     // Base 16 for encoding
     char base16[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
@@ -164,7 +159,7 @@ void HuffmanTree<treeOrder>::generateCodes(xMap<char, std::string> &table) {
 
 // Helper recursive function
 template <int treeOrder>
-void HuffmanTree<treeOrder>::generateCodesRecursive(HuffmanNode* node, std::string code, 
+inline void HuffmanTree<treeOrder>::generateCodesRecursive(HuffmanNode* node, std::string code, 
                                                    xMap<char, std::string> &table, const char base16[]) {
     // If leaf node, store the code
     if (node->children.empty()) {
@@ -179,7 +174,7 @@ void HuffmanTree<treeOrder>::generateCodesRecursive(HuffmanNode* node, std::stri
 }
 
 template <int treeOrder>
-std::string HuffmanTree<treeOrder>::decode(const std::string &huffmanCode)
+inline std::string HuffmanTree<treeOrder>::decode(const std::string &huffmanCode)
 {
     //TODO
     // Get codes
@@ -215,7 +210,7 @@ std::string HuffmanTree<treeOrder>::decode(const std::string &huffmanCode)
 }
 
 template <int treeOrder>
-InventoryCompressor<treeOrder>::InventoryCompressor(InventoryManager *manager)
+inline InventoryCompressor<treeOrder>::InventoryCompressor(InventoryManager *manager)
 {
     //TODO
     invManager = manager;
@@ -226,7 +221,7 @@ InventoryCompressor<treeOrder>::InventoryCompressor(InventoryManager *manager)
 }
 
 template <int treeOrder>
-InventoryCompressor<treeOrder>::~InventoryCompressor()
+inline InventoryCompressor<treeOrder>::~InventoryCompressor()
 {
     //TODO
     delete huffmanTable;
@@ -234,7 +229,7 @@ InventoryCompressor<treeOrder>::~InventoryCompressor()
 }
 
 template <int treeOrder>
-void InventoryCompressor<treeOrder>::buildHuffman()
+inline void InventoryCompressor<treeOrder>::buildHuffman()
 {
     //TODO
     // (a) Traverse all products to build a frequency table for each character in the string
@@ -268,7 +263,7 @@ void InventoryCompressor<treeOrder>::buildHuffman()
 }
 
 template <int treeOrder>
-void InventoryCompressor<treeOrder>::printHuffmanTable() {
+inline void InventoryCompressor<treeOrder>::printHuffmanTable() {
     DLinkedList<char> keys = huffmanTable->keys();
     for (char ch : keys) {
         std::cout << "'" << ch << "' : " << huffmanTable->get(ch) << std::endl;
@@ -276,7 +271,7 @@ void InventoryCompressor<treeOrder>::printHuffmanTable() {
 }
 
 template <int treeOrder>
-std::string InventoryCompressor<treeOrder>::productToString(const List1D<InventoryAttribute> &attributes, const std::string &name)
+inline std::string InventoryCompressor<treeOrder>::productToString(const List1D<InventoryAttribute> &attributes, const std::string &name)
 {
     //TODO
     stringstream ss;
@@ -298,7 +293,7 @@ std::string InventoryCompressor<treeOrder>::productToString(const List1D<Invento
 }
 
 template <int treeOrder>
-std::string InventoryCompressor<treeOrder>::encodeHuffman(const List1D<InventoryAttribute> &attributes, const std::string &name)
+inline std::string InventoryCompressor<treeOrder>::encodeHuffman(const List1D<InventoryAttribute> &attributes, const std::string &name)
 {
     //TODO
     // Convert product data to a string using productToString,
@@ -313,7 +308,7 @@ std::string InventoryCompressor<treeOrder>::encodeHuffman(const List1D<Inventory
 }
 
 template <int treeOrder>
-std::string InventoryCompressor<treeOrder>::decodeHuffman(const std::string &huffmanCode, List1D<InventoryAttribute> &attributesOutput, std::string &nameOutput)
+inline std::string InventoryCompressor<treeOrder>::decodeHuffman(const std::string &huffmanCode, List1D<InventoryAttribute> &attributesOutput, std::string &nameOutput)
 {
     //TODO
     // (a) Decode the string using the Huffman tree.

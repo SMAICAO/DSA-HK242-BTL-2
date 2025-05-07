@@ -205,7 +205,7 @@ public:
 //////////////////////////////////////////////////////////////////////
 
 template <class K, class V>
-xMap<K, V>::xMap(
+inline xMap<K, V>::xMap(
     int (*hashCode)(K &, int),
     float loadFactor,
     bool (*valueEqual)(V &lhs, V &rhs),
@@ -228,14 +228,14 @@ xMap<K, V>::xMap(
 }
 
 template <class K, class V>
-xMap<K, V>::xMap(const xMap<K, V> &map)
+inline xMap<K, V>::xMap(const xMap<K, V> &map)
 {
     // YOUR CODE IS HERE
     copyMapFrom(map);
 }
 
 template <class K, class V>
-xMap<K, V> &xMap<K, V>::operator=(const xMap<K, V> &map)
+inline xMap<K, V> &xMap<K, V>::operator=(const xMap<K, V> &map)
 {
     // YOUR CODE IS HERE
     if (this != &map) {
@@ -247,7 +247,7 @@ xMap<K, V> &xMap<K, V>::operator=(const xMap<K, V> &map)
 }
 
 template <class K, class V>
-xMap<K, V>::~xMap()
+inline xMap<K, V>::~xMap()
 {
     // YOUR CODE IS HERE
     removeInternalData();
@@ -266,7 +266,7 @@ xMap<K, V>::~xMap()
 //////////////////////////////////////////////////////////////////////
 
 template <class K, class V>
-V xMap<K, V>::put(K key, V value)
+inline V xMap<K, V>::put(K key, V value)
 {
     int index = this->hashCode(key, capacity);
     V retValue = value;
@@ -298,7 +298,7 @@ V xMap<K, V>::put(K key, V value)
 }
 
 template <class K, class V>
-V &xMap<K, V>::get(K key)
+inline V &xMap<K, V>::get(K key)
 {
     int index = hashCode(key, capacity);
     // YOUR CODE IS HERE
@@ -325,7 +325,7 @@ V &xMap<K, V>::get(K key)
 }
 
 template <class K, class V>
-V xMap<K, V>::remove(K key, void (*deleteKeyInMap)(K))
+inline V xMap<K, V>::remove(K key, void (*deleteKeyInMap)(K))
 {
     int index = hashCode(key, capacity);
     // YOUR CODE IS HERE
@@ -362,7 +362,7 @@ V xMap<K, V>::remove(K key, void (*deleteKeyInMap)(K))
 }
 
 template <class K, class V>
-bool xMap<K, V>::remove(K key, V value, void (*deleteKeyInMap)(K), void (*deleteValueInMap)(V))
+inline bool xMap<K, V>::remove(K key, V value, void (*deleteKeyInMap)(K), void (*deleteValueInMap)(V))
 {
     // YOUR CODE IS HERE
     int index = hashCode(key, capacity);
@@ -400,7 +400,7 @@ bool xMap<K, V>::remove(K key, V value, void (*deleteKeyInMap)(K), void (*delete
 }
 
 template <class K, class V>
-bool xMap<K, V>::containsKey(K key)
+inline bool xMap<K, V>::containsKey(K key)
 {
     // YOUR CODE IS HERE
     int index = hashCode(key, capacity);
@@ -419,7 +419,7 @@ bool xMap<K, V>::containsKey(K key)
 }
 
 template <class K, class V>
-bool xMap<K, V>::containsValue(V value)
+inline bool xMap<K, V>::containsValue(V value)
 {
     // YOUR CODE IS HERE
     for (int idx = 0; idx < capacity; idx++)
@@ -437,21 +437,21 @@ bool xMap<K, V>::containsValue(V value)
     return false;
 }
 template <class K, class V>
-bool xMap<K, V>::empty()
+inline bool xMap<K, V>::empty()
 {
     // YOUR CODE IS HERE
     return count == 0;
 }
 
 template <class K, class V>
-int xMap<K, V>::size()
+inline int xMap<K, V>::size()
 {
     // YOUR CODE IS HERE
     return count;
 }
 
 template <class K, class V>
-void xMap<K, V>::clear()
+inline void xMap<K, V>::clear()
 {
     // YOUR CODE IS HERE
     removeInternalData();
@@ -461,7 +461,7 @@ void xMap<K, V>::clear()
 }
 
 template <class K, class V>
-DLinkedList<K> xMap<K, V>::keys()
+inline DLinkedList<K> xMap<K, V>::keys()
 {
     // YOUR CODE IS HERE
     DLinkedList<K> keysList;
@@ -477,7 +477,7 @@ DLinkedList<K> xMap<K, V>::keys()
 }
 
 template <class K, class V>
-DLinkedList<V> xMap<K, V>::values()
+inline DLinkedList<V> xMap<K, V>::values()
 {
     // YOUR CODE IS HERE
     DLinkedList<V> valuesList;
@@ -493,7 +493,7 @@ DLinkedList<V> xMap<K, V>::values()
 }
 
 template <class K, class V>
-DLinkedList<int> xMap<K, V>::clashes()
+inline DLinkedList<int> xMap<K, V>::clashes()
 {
     // YOUR CODE IS HERE
     DLinkedList<int> clashList;
@@ -508,7 +508,7 @@ DLinkedList<int> xMap<K, V>::clashes()
 }
 
 template <class K, class V>
-string xMap<K, V>::toString(string (*key2str)(K &), string (*value2str)(V &))
+inline string xMap<K, V>::toString(string (*key2str)(K &), string (*value2str)(V &))
 {
     stringstream os;
     string mark(50, '=');
@@ -557,7 +557,7 @@ string xMap<K, V>::toString(string (*key2str)(K &), string (*value2str)(V &))
  *  Purpose: move all entries in the old hash table (oldTable) to the new table (newTable)
  */
 template <class K, class V>
-void xMap<K, V>::moveEntries(
+inline void xMap<K, V>::moveEntries(
     DLinkedList<Entry *> *oldTable, int oldCapacity,
     DLinkedList<Entry *> *newTable, int newCapacity)
 {
@@ -579,7 +579,7 @@ void xMap<K, V>::moveEntries(
  *      i.e., the maximum number of entries does not exceed "loadFactor*capacity"
  */
 template <class K, class V>
-void xMap<K, V>::ensureLoadFactor(int current_size)
+inline void xMap<K, V>::ensureLoadFactor(int current_size)
 {
     int maxSize = (int)(loadFactor * capacity);
 
@@ -601,7 +601,7 @@ void xMap<K, V>::ensureLoadFactor(int current_size)
  *      3. free the old table.
  */
 template <class K, class V>
-void xMap<K, V>::rehash(int newCapacity)
+inline void xMap<K, V>::rehash(int newCapacity)
 {
     DLinkedList<Entry *> *pOldMap = this->table;
     int oldCapacity = capacity;
@@ -631,7 +631,7 @@ void xMap<K, V>::rehash(int newCapacity)
  *      3. Remove table
  */
 template <class K, class V>
-void xMap<K, V>::removeInternalData()
+inline void xMap<K, V>::removeInternalData()
 {
     // Remove user's data
     if (deleteKeys != 0)
@@ -661,7 +661,7 @@ void xMap<K, V>::removeInternalData()
  */
 
 template <class K, class V>
-void xMap<K, V>::copyMapFrom(const xMap<K, V> &map)
+inline void xMap<K, V>::copyMapFrom(const xMap<K, V> &map)
 {
     removeInternalData();
 

@@ -157,7 +157,7 @@ public:
 //////////////////////////////////////////////////////////////////////
 
 template<class T>
-Heap<T>::Heap(
+inline Heap<T>::Heap(
         int (*comparator)(T&, T&), 
         void (*deleteUserData)(Heap<T>* ) ){
     capacity = 10;
@@ -167,12 +167,12 @@ Heap<T>::Heap(
     this->deleteUserData = deleteUserData;
 }
 template<class T>
-Heap<T>::Heap(const Heap<T>& heap){
+inline Heap<T>::Heap(const Heap<T>& heap){
     copyFrom(heap);
 }
 
 template<class T>
-Heap<T>& Heap<T>::operator=(const Heap<T>& heap){
+inline Heap<T>& Heap<T>::operator=(const Heap<T>& heap){
     if (this != &heap){
         removeInternalData();
         copyFrom(heap);
@@ -183,7 +183,7 @@ Heap<T>& Heap<T>::operator=(const Heap<T>& heap){
 
 
 template<class T>
-Heap<T>::~Heap(){
+inline Heap<T>::~Heap(){
     removeInternalData();
 
     comparator = nullptr;
@@ -191,7 +191,7 @@ Heap<T>::~Heap(){
 }
 
 template<class T>
-void Heap<T>::push(T item){ //item  = 25
+inline void Heap<T>::push(T item){ //item  = 25
     ensureCapacity(count + 1); //[18, 15, 13, 25 , , ]
     elements[count] = item;
     count += 1; //count = 
@@ -214,7 +214,7 @@ void Heap<T>::push(T item){ //item  = 25
  
  */
 template<class T>
-T Heap<T>::pop(){
+inline T Heap<T>::pop(){
     if(count == 0) 
         throw std::underflow_error("Calling to peek with the empty heap.");
     
@@ -237,7 +237,7 @@ T Heap<T>::pop(){
  */
 
 template<class T>
-const T Heap<T>::peek(){
+inline const T Heap<T>::peek(){
     if(count == 0) 
         throw std::underflow_error("Calling to peek with the empty heap.");
     return elements[0];
@@ -245,7 +245,7 @@ const T Heap<T>::peek(){
 
 
 template<class T>
-void Heap<T>::remove(T item, void (*removeItemData)(T)){
+inline void Heap<T>::remove(T item, void (*removeItemData)(T)){
     int foundIdx = this->getItem(item);
     
     //CASE 1: not found
@@ -300,7 +300,7 @@ void Heap<T>::remove_bck(T item, void (*removeItemData)(T)){
 */
 
 template<class T>
-bool Heap<T>::contains(T item){
+inline bool Heap<T>::contains(T item){
     bool found = false;
     for(int idx=0; idx < count; idx++){
         if(compare(elements[idx], item) == 0){
@@ -312,12 +312,12 @@ bool Heap<T>::contains(T item){
 }
 
 template<class T>
-int Heap<T>::size(){
+inline int Heap<T>::size(){
     return count;
 }
 
 template<class T>
-void Heap<T>::heapify(T array[], int size){
+inline void Heap<T>::heapify(T array[], int size){
     for (int i = 0; i < size; i++) {
         ensureCapacity(++count);
         elements[i] = array[i];
@@ -330,7 +330,7 @@ void Heap<T>::heapify(T array[], int size){
 }
 
 template<class T>
-void Heap<T>::clear(){
+inline void Heap<T>::clear(){
     removeInternalData();
     
     capacity = 10;
@@ -339,12 +339,12 @@ void Heap<T>::clear(){
 }
 
 template<class T>
-bool Heap<T>::empty(){
+inline bool Heap<T>::empty(){
     return count == 0;
 }
 
 template<class T>
-void Heap<T>::heapsort(XArrayList<T>& arrayList) {
+inline void Heap<T>::heapsort(XArrayList<T>& arrayList) {
     clear(); 
     for (int i = 0; i < arrayList.size(); i++) {
         ensureCapacity(++count);
@@ -371,7 +371,7 @@ void Heap<T>::heapsort(XArrayList<T>& arrayList) {
 }
 
 template<class T>
-void Heap<T>::heapsortNoPrint(XArrayList<T>& arrayList) {
+inline void Heap<T>::heapsortNoPrint(XArrayList<T>& arrayList) {
     clear(); 
     for (int i = 0; i < arrayList.size(); i++) {
         ensureCapacity(++count);
@@ -398,7 +398,7 @@ void Heap<T>::heapsortNoPrint(XArrayList<T>& arrayList) {
 }
 
 template<class T>
-string Heap<T>::toString(string (*item2str)(T&)){
+inline string Heap<T>::toString(string (*item2str)(T&)){
     stringstream os;
     if(item2str != 0){
         os << "[";
@@ -423,7 +423,7 @@ string Heap<T>::toString(string (*item2str)(T&)){
 //////////////////////////////////////////////////////////////////////
 
 template<class T>
-void Heap<T>::ensureCapacity(int minCapacity){
+inline void Heap<T>::ensureCapacity(int minCapacity){
     if(minCapacity >= capacity){
         //re-allocate 
         int old_capacity = capacity;
@@ -442,14 +442,14 @@ void Heap<T>::ensureCapacity(int minCapacity){
 }
 
 template<class T>
-void Heap<T>::swap(int a, int b){
+inline void Heap<T>::swap(int a, int b){
     T temp = this->elements[a];
     this->elements[a] = this->elements[b];
     this->elements[b] = temp;
 }
 
 template<class T>
-void Heap<T>::reheapUp(int position){
+inline void Heap<T>::reheapUp(int position){
     if(position <= 0) return;
     int parent = (position-1)/2;
     
@@ -460,7 +460,7 @@ void Heap<T>::reheapUp(int position){
 }
 
 template<class T>
-void Heap<T>::reheapDown(int position){
+inline void Heap<T>::reheapDown(int position){
     int leftChild = position*2 + 1;
     int rightChild = position*2 + 2;
     int lastPosition = this->count - 1;
@@ -481,7 +481,7 @@ void Heap<T>::reheapDown(int position){
 }
 
 template<class T>
-void Heap<T>::reheapDown(int position, int lastPosition){
+inline void Heap<T>::reheapDown(int position, int lastPosition){
     int leftChild = position*2 + 1;
     int rightChild = position*2 + 2;
 
@@ -502,7 +502,7 @@ void Heap<T>::reheapDown(int position, int lastPosition){
 }
 
 template<class T>
-int Heap<T>::getItem(T item){
+inline int Heap<T>::getItem(T item){
     int foundIdx = -1;
     for(int idx=0; idx < this->count; idx++){
         if(compare(elements[idx], item) == 0){
@@ -514,13 +514,13 @@ int Heap<T>::getItem(T item){
 }
 
 template<class T>
-void Heap<T>::removeInternalData(){
+inline void Heap<T>::removeInternalData(){
     if(this->deleteUserData != 0) deleteUserData(this); //clear users's data if they want
     delete []elements;
 }
 
 template<class T>
-void Heap<T>::copyFrom(const Heap<T>& heap){
+inline void Heap<T>::copyFrom(const Heap<T>& heap){
     capacity = heap.capacity;
     count = heap.count;
     elements = new T[capacity];

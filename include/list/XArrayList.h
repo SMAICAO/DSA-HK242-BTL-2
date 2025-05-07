@@ -177,7 +177,7 @@ public:
 //////////////////////////////////////////////////////////////////////
 
 template <class T>
-XArrayList<T>::XArrayList(
+inline XArrayList<T>::XArrayList(
     void (*deleteUserData)(XArrayList<T> *),
     bool (*itemEqual)(T &, T &),
     int capacity)
@@ -192,7 +192,7 @@ XArrayList<T>::XArrayList(
 }
 
 template <class T>
-void XArrayList<T>::copyFrom(const XArrayList<T> &list)
+inline void XArrayList<T>::copyFrom(const XArrayList<T> &list)
 {
     /*
     * Copies the contents of another XArrayList into this list.
@@ -216,7 +216,7 @@ void XArrayList<T>::copyFrom(const XArrayList<T> &list)
 }
 
 template <class T>
-void XArrayList<T>::removeInternalData()
+inline void XArrayList<T>::removeInternalData()
 {
     /*
     * Clears the internal data of the list by deleting the dynamic array and any user-defined data.
@@ -236,14 +236,14 @@ void XArrayList<T>::removeInternalData()
 }
 
 template <class T>
-XArrayList<T>::XArrayList(const XArrayList<T> &list)
+inline XArrayList<T>::XArrayList(const XArrayList<T> &list)
 {
     // TODO
     copyFrom(list);
 }
 
 template <class T>
-XArrayList<T> &XArrayList<T>::operator=(const XArrayList<T> &list)
+inline XArrayList<T> &XArrayList<T>::operator=(const XArrayList<T> &list)
 {
     // TODO
     if (this != &list) {
@@ -254,7 +254,7 @@ XArrayList<T> &XArrayList<T>::operator=(const XArrayList<T> &list)
 }
 
 template <class T>
-XArrayList<T>::~XArrayList()
+inline XArrayList<T>::~XArrayList()
 {
     // TODO
     removeInternalData();
@@ -264,7 +264,7 @@ XArrayList<T>::~XArrayList()
 }
 
 template <class T>
-void XArrayList<T>::add(T e)
+inline void XArrayList<T>::add(T e)
 {
     // TODO
     ensureCapacity(count + 1);
@@ -272,7 +272,7 @@ void XArrayList<T>::add(T e)
 }
 
 template <class T>
-void XArrayList<T>::add(int index, T e)
+inline void XArrayList<T>::add(int index, T e)
 {
     // TODO
     if (index < 0 || index > count) {
@@ -290,7 +290,7 @@ void XArrayList<T>::add(int index, T e)
 }
 
 template <class T>
-T XArrayList<T>::removeAt(int index)
+inline T XArrayList<T>::removeAt(int index)
 {
     // TODO
     checkIndex(index);
@@ -305,7 +305,7 @@ T XArrayList<T>::removeAt(int index)
 }
 
 template <class T>
-bool XArrayList<T>::removeItem(T item, void (*removeItemData)(T))
+inline bool XArrayList<T>::removeItem(T item, void (*removeItemData)(T))
 {
     // TODO
     int index = indexOf(item);
@@ -324,21 +324,21 @@ bool XArrayList<T>::removeItem(T item, void (*removeItemData)(T))
 }
 
 template <class T>
-bool XArrayList<T>::empty()
+inline bool XArrayList<T>::empty()
 {
     // TODO
     return count == 0;
 }
 
 template <class T>
-int XArrayList<T>::size()
+inline int XArrayList<T>::size()
 {
     // TODO
     return count;
 }
 
 template <class T>
-void XArrayList<T>::clear()
+inline void XArrayList<T>::clear()
 {
     // TODO
     removeInternalData();
@@ -348,7 +348,7 @@ void XArrayList<T>::clear()
 }
 
 template <class T>
-T &XArrayList<T>::get(int index)
+inline T &XArrayList<T>::get(int index)
 {
     // TODO
     checkIndex(index);
@@ -357,7 +357,7 @@ T &XArrayList<T>::get(int index)
 }
 
 template <class T>
-int XArrayList<T>::indexOf(T item)
+inline int XArrayList<T>::indexOf(T item)
 {
     // TODO
     for (int i = 0; i < count; i++) {
@@ -369,14 +369,14 @@ int XArrayList<T>::indexOf(T item)
     return -1;
 }
 template <class T>
-bool XArrayList<T>::contains(T item)
+inline bool XArrayList<T>::contains(T item)
 {
     // TODO
     return indexOf(item) != -1;
 }
 
 template <class T>
-string XArrayList<T>::toString(string (*item2str)(T &))
+inline string XArrayList<T>::toString(string (*item2str)(T &))
 {
     /**
      * Converts the array list into a string representation, formatting each element using a user-defined function.
@@ -409,7 +409,7 @@ string XArrayList<T>::toString(string (*item2str)(T &))
 //////////////////////// (private) METHOD DEFNITION //////////////////
 //////////////////////////////////////////////////////////////////////
 template <class T>
-void XArrayList<T>::checkIndex(int index)
+inline void XArrayList<T>::checkIndex(int index)
 {
     /**
      * Validates whether the given index is within the valid range of the list.
@@ -422,7 +422,7 @@ void XArrayList<T>::checkIndex(int index)
     }
 }
 template <class T>
-void XArrayList<T>::ensureCapacity(int index)
+inline void XArrayList<T>::ensureCapacity(int index)
 {
     /**
      * Ensures that the list has enough capacity to accommodate the given index.
