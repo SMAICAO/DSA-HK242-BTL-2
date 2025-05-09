@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void (*func_ptr[17])() = {
+void (*func_ptr[18])() = {
     hashDemo1,
     hashDemo2,
     hashDemo3,
@@ -19,6 +19,7 @@ void (*func_ptr[17])() = {
     heapDemo1,
     heapDemo2,
     heapDemo3,
+    heapDemo4,
     tc_huffman1001,
     tc_huffman1002,
     tc_huffman1003,
@@ -30,15 +31,16 @@ void (*func_ptr[17])() = {
 
 void run(int func_idx)
 {
+    cout << "----------------------------------------" << endl;
+    cout << "Running test case " << func_idx << "..." << endl;
     func_ptr[func_idx]();
+    cout << "Test case " << func_idx << " completed." << endl;
+    cout << "----------------------------------------" << endl << endl;
 }
 
 int main(int argc, char **argv)
 {
-    // cout << "Assignment-2" << endl;
-    if (argc == 1) {
-        hashDemo1();
-    }
+    run(10);
     
     return 0;
 }

@@ -11,6 +11,13 @@
 #include <type_traits>
 using namespace std;
 
+// REMOVE BEFORE SUBMITTING
+#include <utility>
+inline std::ostream& operator<<(ostream& os, const pair<char, int>& p) {
+    os << "(" << p.first << ", " << p.second << ")";
+    return os;
+}
+
 template <class T>
 class XArrayList : public IList<T>
 {
@@ -39,9 +46,9 @@ public:
     T removeAt(int index);
     bool removeItem(T item, void (*removeItemData)(T) = 0);
     bool empty();
-    int size();
+    int size() const;
     void clear();
-    T &get(int index);
+    T &get(int index) const;
     int indexOf(T item);
     bool contains(T item);
     string toString(string (*item2str)(T &) = 0);
@@ -84,7 +91,7 @@ public:
     }
 
 protected:
-    void checkIndex(int index);     // check validity of index for accessing
+    void checkIndex(int index) const;     // check validity of index for accessing
     void ensureCapacity(int index); // auto-allocate if needed
 
     /** equals:
@@ -206,8 +213,9 @@ inline void XArrayList<T>::copyFrom(const XArrayList<T> &list)
     this->count = list.count;
     
     data = new T[capacity];
-    for (auto node : list) {
-        data[count++] = node;
+    for (int i = 0; i < list.count; i++)
+    {
+        data[i] = list.data[i];
     }
 
     // Copy functions
@@ -331,7 +339,7 @@ inline bool XArrayList<T>::empty()
 }
 
 template <class T>
-inline int XArrayList<T>::size()
+inline int XArrayList<T>::size() const
 {
     // TODO
     return count;
@@ -348,7 +356,7 @@ inline void XArrayList<T>::clear()
 }
 
 template <class T>
-inline T &XArrayList<T>::get(int index)
+inline T &XArrayList<T>::get(int index) const
 {
     // TODO
     checkIndex(index);
@@ -409,7 +417,7 @@ inline string XArrayList<T>::toString(string (*item2str)(T &))
 //////////////////////// (private) METHOD DEFNITION //////////////////
 //////////////////////////////////////////////////////////////////////
 template <class T>
-inline void XArrayList<T>::checkIndex(int index)
+inline void XArrayList<T>::checkIndex(int index) const
 {
     /**
      * Validates whether the given index is within the valid range of the list.

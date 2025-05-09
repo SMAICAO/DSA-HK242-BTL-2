@@ -14,10 +14,10 @@ using namespace std;
 template<typename T> class List1D;
 template<typename T> class List2D;
 template<typename T>
-ostream& operator<<(ostream& os, const List1D<T>& list);
+inline ostream& operator<<(ostream& os, const List1D<T>& list);
 
 template<typename T>
-ostream& operator<<(ostream& os, const List2D<T>& matrix);
+inline ostream& operator<<(ostream& os, const List2D<T>& matrix);
 
 // -------------------- List1D --------------------
 template <typename T>

@@ -41,9 +41,9 @@ public:
     T removeAt(int index);
     bool removeItem(T item, void (*removeItemData)(T) = 0);
     bool empty();
-    int size();
+    int size() const;
     void clear();
-    T &get(int index);
+    T &get(int index) const;
     int indexOf(T item);
     bool contains(T item);
     string toString(string (*item2str)(T &) = 0);
@@ -453,7 +453,7 @@ inline bool DLinkedList<T>::empty()
 }
 
 template <class T>
-inline int DLinkedList<T>::size()
+inline int DLinkedList<T>::size() const
 {
     // TODO
     return count;
@@ -470,18 +470,18 @@ inline void DLinkedList<T>::clear()
 }
 
 template <class T>
-inline T &DLinkedList<T>::get(int index)
+inline T &DLinkedList<T>::get(int index) const
 {
     // TODO
     if (index < 0 || index >= count) {
         throw std::out_of_range("Index is out of range");
     }
 
-    auto it = begin();
+    Node* curr = head->next;
     for (int i = 0; i < index; i++) {
-        it++;
+        curr = curr->next;
     }
-    return *it;
+    return curr->data;
 }
 
 template <class T>
@@ -584,19 +584,24 @@ inline void DLinkedList<T>::removeInternalData()
      * Traverses and deletes each node between the head and tail to release memory.
      */
     // TODO
+    // Call user data deleter if provided (should only delete node->data, not nodes)
     if (deleteUserData != nullptr) {
         deleteUserData(this);
     }
 
-    Node *current = head->next;
-    while (current != tail) {
+    // Delete all nodes between head and tail
+    Node *current = head ? head->next : nullptr;
+    while (current && current != tail) {
         Node *nextNode = current->next;
         delete current;
         current = nextNode;
     }
 
-    delete head;
-    delete tail;
+    // Delete head and tail if they exist
+    if (head) delete head;
+    if (tail) delete tail;
+    head = nullptr;
+    tail = nullptr;
     count = 0;
 }
 

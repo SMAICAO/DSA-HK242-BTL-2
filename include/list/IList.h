@@ -64,7 +64,7 @@ public:
     
     /* size(): return number of items stored in the list
      */
-    virtual int     size()=0;
+    virtual int     size() const=0;
     
     
     
@@ -79,7 +79,7 @@ public:
      * 
      * NOTE: programmers can change the item returned by this function
      */
-    virtual T&      get(int index)=0;
+    virtual T&      get(int index) const=0;
     
     
     /* indexOf(T item): return the index of item

@@ -208,10 +208,10 @@ template <class K, class V>
 inline xMap<K, V>::xMap(
     int (*hashCode)(K &, int),
     float loadFactor,
-    bool (*valueEqual)(V &lhs, V &rhs),
+    bool (*valueEqual)(V &, V &),
     void (*deleteValues)(xMap<K, V> *),
-    bool (*keyEqual)(K &lhs, K &rhs),
-    void (*deleteKeys)(xMap<K, V> *pMap))
+    bool (*keyEqual)(K &, K &),
+    void (*deleteKeys)(xMap<K, V> *))
 {
     // YOUR CODE IS HERE
     this->hashCode = hashCode;
@@ -276,7 +276,7 @@ inline V xMap<K, V>::put(K key, V value)
     int indexOfKey = -1;
 
     for (auto it = list.begin(); it != list.end(); it++) {
-        if ((*it)->key == key) {
+        if (keyEQ((*it)->key, key)) {
             indexOfKey = list.indexOf(*it);
             break;
         }
